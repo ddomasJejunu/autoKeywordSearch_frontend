@@ -112,6 +112,19 @@ video{
         .btn-add:active, .btn-add:focus, .btn-add:hover {
         background-color: #c7b300 !important;
         border-color: #c7b300 !important;
-        }
+    }
+
+
+    .btn-login{
+        background-image: url(../img/login.png); 
+        height : 49px;
+        width : 300px;
+    }
+
+    .btn-login:active,.btn-secondary:focus,.btn-secondary:hover{
+        background: linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5) ), url(../img/login.png);
+    }
+
+    
     .input{font-weight:300!important}
 }
