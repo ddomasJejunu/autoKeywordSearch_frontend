@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>빰빠라밤</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+
+
+    <script>
+      var i = 0;
+
+      function add_row() {
+        var my_tbody = document.getElementById('my-tbody');
+        var row = my_tbody.insertRow( my_tbody.rows.length ); // 하단에 추가
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+        var cell3 = row.insertCell(2);
+        var cell4 = row.insertCell(3);
+        cell1.innerHTML = ++i;
+        cell2.innerHTML = "www.naver.com";
+        cell3.innerHTML = "뭐 대충 아무거나 찾음";
+        cell4.innerHTML = "<button type=\"button\" class=\"btn_delete\">삭제<br>아직 미구현 commingsoon</button>";
+
+      }
+
+      var eventTarget = document.getElementsByClassName('btn_delete')
+
+      for (var i=0; i<eventTarget.length; i++) {
+        eventTarget[i].addEventListener('click', function() {
+          var parent = document.querySelector('#testTable tbody')
+          parent.removeChild(this.parentElement.parentElement)
+          i --
+        })
+      }
+
+    </script>
+
+
+  </head>
+  <body>
+    <h1><center>대충 테이블 확인 하는곳</center></h1>
+
+
+    <table class="table table-dark" id="testTable">
+  <thead>
+    <tr>
+      <th scope="col">순번</th>
+      <th scope="col">URL</th>
+      <th scope="col">키워드</th>
+      <th scope="col">삭제버튼 놓는곳</th>
+    </tr>
+  </thead>
+  <tbody id = my-tbody>
+  </tbody>
+</table>
+<button onclick="add_row()">행 추가하기</button>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+
+
+
+
+  </body>
+</html>
