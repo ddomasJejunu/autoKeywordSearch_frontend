@@ -26,7 +26,6 @@ h6 {
   font-weight: 700;
 }
 
-
 @media (pointer: coarse) and (hover: none) {
   body {
     background: url("../img/1.jpg") #002E66 no-repeat center center scroll;
@@ -120,10 +119,10 @@ h6 {
 }
 
 
-
 @media (min-width: 768px) {
   
 }
+
 .btn-add {
   background-color: yellow;
   border-color: yellow;
@@ -143,9 +142,6 @@ h6 {
   background-color: #ba7c37 !important;
   border-color: #ba7c37 !important;
 }
-
-
-
 
 .input {
   font-weight: 300 !important;
