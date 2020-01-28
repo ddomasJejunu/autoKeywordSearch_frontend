@@ -1,0 +1,250 @@
+<!--
+    Copyright (c) 2012-2016 Adobe Systems Incorporated. All rights reserved.
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Content-Security-Policy reference : http://cspisawesome.com -->
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' gap: ws: https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' data: blob:;media-src *;img-src * 'self' data: content:;script-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
+
+    <link rel="stylesheet" type="text/css" href="../css/index.css" />
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" type="text/css" href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <title>Main</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="../vendor/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script type="text/javascript" src="../js/coming-soon.min.js"></script>
+
+    <script type="text/javascript" src="../js/needsFunc.js"></script>
+    <script type="text/javascript" src="../cordova.js"></script>
+    <script type="text/javascript" src="../js/index.js"></script>
+    <script>
+        var i = 0;
+
+        function add_row() {
+            var my_tbody = document.getElementById('search_list');
+            var row = my_tbody.insertRow(my_tbody.rows.length); // 하단에 추가
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            var cell3 = row.insertCell(2);
+            var cell4 = row.insertCell(3);
+            cell1.innerHTML = ++i;
+            cell2.innerHTML = "www.naver.com";
+            cell3.innerHTML = "뭐 대충 아무거나 찾음";
+            cell4.innerHTML = `<input type="checkbox">`;
+        }
+
+        var eventTarget = document.getElementsByClassName('btn_delete');
+
+        for (var i = 0; i < eventTarget.length; i++) {
+            eventTarget[i].addEventListener('click', function() {
+                var parent = document.querySelector('#testTable tbody');
+                parent.removeChild(this.parentElement.parentElement);
+                i--;
+            })
+        }
+    </script>
+    <script>
+        var kakaoAccessToken;
+        function requestKakaoLogout() {
+            $("button").attr("disabled", true);
+
+            const logoutRequestURI = `${serverHost}/oauth/kakao/logout/`;
+            $.ajax({
+                url: logoutRequestURI,
+                data: { kakaoAccessToken: kakaoAccessToken },
+                method: "POST",
+                dataType: "JSON"
+            })
+            .done(function(data) {
+                if (data['success']) {
+                    sessionStorage.clear();
+
+                    alert("로그아웃되었습니다.");
+
+                    location.replace("../index.html");
+                }
+                else {
+                    alert("로그아웃에 실패하였습니다.");
+                }
+            })
+            .fail(function(request, status, error) {
+                // alert(`code: ${request.status}\nmessage: ${request.responseText}\nerror`);
+                alert("서버 연결에 실패하였습니다.");
+            })
+            .always(function() {
+                $("button").attr("disabled", false);
+            });
+        }
+
+        function deleteItem(no, index) {
+            $("button").attr("disabled", true);
+            
+            const requestDeleteURL = `${serverHost}/api/delete/`;
+            $.ajax({
+                url: requestDeleteURL,
+                data: { no: no },
+                method: "POST",
+                dataType: "JSON"
+            })
+            .done(function(data) {
+                if (new Boolean(data['success'])) {
+                    $(`#item${index}`).children().remove();
+                    $(`#item${index}`).remove();
+                    // let parent = document.getElementById('search_list');
+                    // parent.removeChild(parent.childNodes[index]);
+
+                    var targets = $(".no");
+                    for (var i = 0; i < targets.length; i++) {
+                        $(`.no:eq(${i})`).text(`${i+1}`);
+                    }
+                }
+                else {
+                    alert("알 수 없는 이유로 삭제에 실패하였습니다.");
+                }
+            })
+            .fail(function(request, status, error) {
+                // alert(`code: ${request.status}\nmessage: ${request.responseText}\nerror`);
+                alert("서버 연결에 실패하였습니다.");
+            })
+            .always(function() {
+                $("button").attr("disabled", false);
+            });
+        }
+
+        function deleteItems() {
+            // $("#kakao-logged-group .kakao-logout-btn,#kakao-logged-group .kakao-login-btn").remove();
+        }
+
+        function moveAddKeyword() {
+            location.href = "./addSearching.html";
+        }
+        
+        $(document).ready(function () {
+            kakaoAccessToken = sessionStorage.getItem("kakaoAccessToken");
+            if (!kakaoAccessToken) {
+                sessionStorage.clear();
+                location.replace("../index.html");
+            }
+
+            $("#login_info").append(`${kakaoAccessToken}<br>`);
+            $("#login_info").append(`${sessionStorage.getItem("userID")}<br>`);
+            $("#login_info").append(`${sessionStorage.getItem("nickName")}<br>`);
+            if (sessionStorage.getItem("isUserEmail")) {
+                $("#login_info").append(`${sessionStorage.getItem("userEmail")}<br>`);
+            }
+
+            if (new Boolean(sessionStorage.getItem("isRegist"))) {
+                const requestSearchListURL = `${serverHost}/api/read/`;
+                $.ajax({
+                    url: requestSearchListURL,
+                    data: { userID: sessionStorage.getItem('userID') },
+                    method: "POST",
+                    dataType: "JSON"
+                })
+                .done(function(data) {
+                    var count = data['count'];
+                    if (new Boolean(data['success'])) {
+                        if (count == 0) {
+                            $("#search_list").append(`<tr><td colspan="8">아이템이 없습니다.</td></tr>`);
+                        }
+                        else {
+                            // table 행 추가시 참고사항 - https://m.blog.naver.com/PostView.nhn?blogId=nemesisx&logNo=10091031298&proxyReferer=https%3A%2F%2Fwww.google.com%2F
+                            for (var index = 0; index < count; index++) {
+                                const item = data['searchList'][index];
+                                let child = $(`<tr id=item${index}></tr>`);
+                                child.appendTo("#search_list");
+                                child.append(`<td class="no">${index+1}</td>`);
+                                child.append(`<td scope="col" class="str"><a href="./updateSearching.html?no=${item["no"]}">${item["search_url"]}</a></td>`);
+                                child.append(`<td class="str">${item["keywords"].replace(",", ", ")}</td>`);
+                                child.append(`<td class="landscape">${item["start_time"]}</td>`);
+                                child.append(`<td class="landscape">${item["end_time"]}</td>`);
+                                child.append(`<td class="landscape">${typeof(item["complete_time"]) === "object" ? "" : item["complete_time"]}</td>`);
+                                child.append(`<td><button class="del-btn">삭제</button></td>`);
+                                
+                                let eventTargets = document.getElementsByClassName('del-btn');
+                                let eventTarget = eventTargets[eventTargets.length - 1];
+                                const num = index;
+                                eventTarget.addEventListener("click", function() {
+                                    deleteItem(item["no"], num);
+
+                                    alert("삭제가 완료되었습니다.");
+
+                                    this.removeEventListener("click", arguments.callee); // event handler 제거 - http://bamtol.net/v5/bbs/board.php?bo_table=pp_js&wr_id=45
+                                });
+                            }
+                        }
+                    }
+                    else {
+                        alert("리스트 출력에 실패하였습니다.");
+                    }
+                })
+                .fail(function(request, status, error) {
+                    // alert(`code: ${request.status}\nmessage: ${request.responseText}\nerror`);
+                    alert("서버 연결에 실패하였습니다.");
+                });
+            }
+
+            $("#search_list").tableScroll({height:200});
+        });
+    </script>
+</head>
+<body>
+    <div id="deviceready" class="blink">
+        <p class="event listening">Connecting to Device</p>
+        <p class="event received">Device is Ready</p>
+    </div>
+    <nav>
+        <h1><center>키워드 조회 리스트</center></h1>
+        <p id="login_info" style="display:none"></p>
+        <div class="content">
+            <table class="table table-dark" id="testTable">
+                <thead>
+                    <tr>
+                        <th scope="col">번호</th>
+                        <th scope="col">검색 URL</th>
+                        <th scope="col">키워드</th>
+                        <th scope="col" class="landscape">시작 시간</th>
+                        <th scope="col" class="landscape">끝난 시간</th>
+                        <th scope="col" class="landscape">검색된 시간</th>
+                        <th scope="col">삭제버튼</th>
+                    </tr>
+                </thead>
+                <tbody id="search_list"></tbody>
+            </table>
+        </div>
+        <button onclick="moveAddKeyword()">URL 등록하기</button>
+        <button onclick="requestKakaoLogout()">로그아웃</button>
+    </nav>
+</body>
+</html>

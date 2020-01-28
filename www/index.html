@@ -1,0 +1,171 @@
+<!--
+    Copyright (c) 2012-2016 Adobe Systems Incorporated. All rights reserved.
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Content-Security-Policy reference : http://cspisawesome.com -->
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' gap: ws: https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' data: blob:;media-src *;img-src * 'self' data: content:;script-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
+
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" type="text/css"href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom fonts for this template -->
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,200i,300,300i,400,400i,600,600i,700,700i,900,900i" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,300i,400,400i,700,700i,900,900i" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" type="text/css" href="css/coming-soon.css" rel="stylesheet">
+    
+    <title>Login</title>
+
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="vendor/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script type="text/javascript" src="js/coming-soon.min.js"></script>
+
+    <script type="text/javascript" src="js/needsFunc.js"></script>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript">
+        app.initialize();
+    </script>
+    <script>
+        // session 접근 - http://magic.wickedmiso.com/m/73?category=727614
+        function requestKakaoLogin() {
+            $("button").attr("disabled", true);
+
+            const clientID = "7347aa7b82ad90e1675c3065dc1ce2bf";
+
+            // 앱에서 접근가능한 ip로 변경 후 kakao redirect uri에 등록할 것
+            const requestCodeURL = `${kakaoAuthHost}/oauth/authorize/`;
+            const getCodeURL = `${serverHost}/oauth/kakao/login/code/`;
+            const requestTokenURL = `${serverHost}/oauth/kakao/login/`;
+            
+            // jquery 비동기 통신 - https://araikuma.tistory.com/640
+            $.ajax({
+                url: requestCodeURL,
+                data: { client_id: clientID, redirect_uri: getCodeURL, response_type: "code", scope: "talk_message" },
+                method: "GET",
+                dataType: "JSON"
+            })
+            .done(function(data) {
+                if (new Boolean(data['success'])) {
+                    code = data['code'];
+                    $.ajax({
+                        url: requestTokenURL,
+                        data: { clientID: clientID, redirectURI: getCodeURL, code: code },
+                        method: "POST",
+                        dataType: "JSON"
+                    })
+                    .done(function(data) {
+                        if (new Boolean(data['success'])) {
+                            sessionStorage.setItem('kakaoAccessToken', data['kakaoAccessToken']);
+                            sessionStorage.setItem('userID', data['userID']);
+                            sessionStorage.setItem('nickName', data['nickName']);
+                            sessionStorage.setItem('isUserEmail', data['isUserEmail']);
+                            if (new Boolean(data['isUserEmail'])) {
+                                sessionStorage.setItem('userEmail', data['userEmail']);
+                            }
+                            sessionStorage.setItem('isRegist', data['isRegist']);
+
+                            // alert(`access_token = ${data['kakaoAccessToken']}\nuser_id = ${data['userID']}\nnick_name = ${data['nickName']}`);
+                            alert(`${data['nickName']}님 환영합니다.`);
+
+                            location.replace("./html/main.html");
+                        }
+                        else {
+                            // alert("access token 얻기 실패");
+                            alert("알 수 없는 이유로 로그인에 실패하였습니다.");
+                        }
+                    })
+                    .fail(function(request, status, error) {
+                        // alert(`code: ${request.status}\nmessage: ${request.responseText}\nerror`);
+                        alert("서버 데이터베이스 문제로 로그인에 실패하였습니다.");
+                    }
+                    .always(function() {
+                        $("button").attr("disabled", false);
+                    }));
+                }
+                else {
+                    // alert("code 얻기 실패");
+                    alert("알 수 없는 이유로 로그인에 실패하였습니다.");
+                    $("button").attr("disabled", false);
+                }
+            })
+            .fail(function(request, status, error) {
+                // alert(`code: ${request.status}\nmessage: ${request.responseText}\nerror`);
+                if (request.status == 200) {
+                    // 앱이 아직 연결 되지 않은 경우
+                    // 해결해야 할 사항
+                    //   다음과 같이 카카오 로그인 창이 열린 후 main.html로 연결이 되야함
+                    //   위 사항이 되지 않을 경우 외부 웹브라우저를 호출하여 로그인을 하고 앱으로 돌아와야함
+                    // window.open(`https://accounts.kakao.com/login?continue=https%3A%2F%2Faccounts.kakao.com%2Fweblogin%2Faccount`, "_self", "location=no, toolbar=no");
+                    alert("아직 로그인되지 못했습니다.");
+                }
+                else {
+                    alert("서버 연결에 실패하였습니다.");
+                }
+
+                $("button").attr("disabled", false);
+            })
+        }
+
+        $(document).ready(function () {
+            sessionStorage.clear();
+            if (sessionStorage.getItem('kakaoAccessToken')) {
+                // location.replace("./html/main.html");
+            }
+        });
+    </script>
+</head>
+<body>
+    <div id="deviceready" class="blink">
+        <p class="event listening">Connecting to Device</p>
+        <p class="event received">Device is Ready</p>
+    </div>
+    <nav>
+        <div class="masthead">
+            <div class="masthead-bg"></div>
+            <div class="container h-100">
+                <div class="row h-100">
+                <div class="col-12 my-auto">
+                    <div class="masthead-content text-white py-5 py-md-0">
+                        <h1 class="mb-3">키워드를 <br>검색<p>하기전에....</p></h1>
+                        <p class="mb-5"><strong>카카오</strong>로그인이 필요해요
+                        <div class="input-group input-group-newsletter">
+                            <button onclick="requestKakaoLogin()" class="btn btn-login"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+</body>
+</html>
