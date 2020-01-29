@@ -139,6 +139,7 @@
 
         $(document).ready(function () {
             sessionStorage.clear();
+            sessionStorage.setItem('kakaoAccessToken', 'anyone');
             if (sessionStorage.getItem('kakaoAccessToken')) {
                 // location.replace("./html/main.html");
             }
@@ -152,7 +153,6 @@
     </div>
     <nav>
         <div class="masthead">
-            <div class="masthead-bg"></div>
             <div class="container h-100">
                 <div class="row h-100">
                 <div class="col-12 my-auto">
@@ -160,9 +160,10 @@
                         <h1 class="mb-3">키워드를 <br>검색<p>하기전에....</p></h1>
                         <p class="mb-5"><strong>카카오</strong>로그인이 필요해요
                         <div class="input-group input-group-newsletter">
-                            <button onclick="requestKakaoLogin()" class="btn btn-login"></button>
+                            <button onclick="location.replace('./html/main.html')" class="btn btn-login"></button>
                         </div>
                     </div>
+                </div>
                 </div>
             </div>
         </div>
