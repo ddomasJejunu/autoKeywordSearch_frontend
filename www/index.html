@@ -78,9 +78,18 @@
             .done(function(data) {
                 if (new Boolean(data['success'])) {
                     code = data['code'];
+                    platform = 0;
+                    switch (device.platform) {
+                        case "Android": platform = 1; break;
+                        case "BlackBerry": platform = 2; break;
+                        case "iPhone": platform = 3; break;
+                        case "webOS": platform = 4; break;
+                        case "WinCE": platform = 5; break;
+                    }
+
                     $.ajax({
                         url: requestTokenURL,
-                        data: { clientID: clientID, redirectURI: getCodeURL, code: code },
+                        data: { clientID: clientID, redirectURI: getCodeURL, code: code, deviceID: device.uuid, platform: platform },
                         method: "POST",
                         dataType: "JSON"
                     })
