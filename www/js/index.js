@@ -39,11 +39,60 @@ var app = {
     receivedEvent: function(id) {
         var parentElement = document.getElementById(id);
         var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
+        var waitingElement = parentElement.querySelector('.waiting');
 
         listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
+        waitingElement.setAttribute('style', 'display:block;');
 
         console.log('Received Event: ' + id);
+        app.setupPush(id);
+    },
+    setupPush: function(id) {
+        console.log('calling push init');
+        var push = PushNotification.init({
+            "android": {
+                "senderID": "552416988250" // "AIzaSyCYQwEfxH8cyDu2C_syD3rGH1Qj2Iv6uIc"
+            },
+            "browser": {},
+            "ios": {
+                "sound": true,
+                // "vibration": true,
+                "alert": true,
+                "badge": true
+            },
+            "windows": {}
+        });
+        console.log('after init');
+
+        push.on('registration', function(data) {
+            console.log('registration event: ' + data.registrationId);
+
+            var oldRegId = localStorage.getItem('registrationId');
+            if (oldRegId !== data.registrationId) {
+                localStorage.setItem('registrationId', data.registrationId);
+                // Post registrationId to your app server as the value has changed
+            }
+
+            var parentElement = document.getElementById(id);
+            var waitingElement = parentElement.querySelector('.waiting');
+            var receivedElement = parentElement.querySelector('.received');
+
+            waitingElement.setAttribute('style', 'display:none;');
+            receivedElement.setAttribute('style', 'display:block;');
+        });
+
+        push.on('error', function(e) {
+            console.log("push error = " + e.message);
+        });
+
+        push.on('notification', function(data) {
+            console.log('notification event');
+            navigator.notification.alert(
+                data.message,         // message
+                null,                 // callback
+                data.title,           // title
+                'Ok'                  // buttonName
+            );
+       });
     }
 };

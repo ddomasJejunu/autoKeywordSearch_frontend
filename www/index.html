@@ -77,8 +77,9 @@
             })
             .done(function(data) {
                 if (new Boolean(data['success'])) {
-                    code = data['code'];
-                    platform = 0;
+                    let code = data['code'];
+                    let deviceID = device.uuid;
+                    let platform = 0;
                     switch (device.platform) {
                         case "Android": platform = 1; break;
                         case "BlackBerry": platform = 2; break;
@@ -89,7 +90,7 @@
 
                     $.ajax({
                         url: requestTokenURL,
-                        data: { clientID: clientID, redirectURI: getCodeURL, code: code, deviceID: device.uuid, platform: platform },
+                        data: { clientID: clientID, redirectURI: getCodeURL, code: code, deviceID: deviceID, platform: platform },
                         method: "POST",
                         dataType: "JSON"
                     })
@@ -107,6 +108,30 @@
                             // alert(`access_token = ${data['kakaoAccessToken']}\nuser_id = ${data['userID']}\nnick_name = ${data['nickName']}`);
                             alert(`${data['nickName']}님 환영합니다.`);
 
+                            // $.ajax({
+                            //     url: `${serverHost}/send/kakao/push/token/regist/`,
+                            //     data: { uuid: data['userID'], deviceID: deviceID, platform: platform, pushToken: localStorage.getItem('registrationId') },
+                            //     method: "POST",
+                            //     dataType: "JSON",
+                            //     async: false
+                            // })
+                            // .fail(function(request, status, error) {
+                            //     alert(`code: ${request.status}\nmessage: ${request.responseText}\nerror`);
+                            // });
+
+                            // $.ajax({
+                            //     url: `${serverHost}/send/kakao/push/token/select/`,
+                            //     data: { uuid: data['userID'] },
+                            //     method: "GET",
+                            //     dataType: "JSON",
+                            // })
+                            // .fail(function(request, status, error) {
+                            //     alert(`code: ${request.status}\nmessage: ${request.responseText}\nerror`);
+                            // })
+                            // .always(function() {
+                            //     $("button").attr("disabled", false);
+                            // });
+
                             location.replace("./html/main.html");
                         }
                         else {
@@ -117,10 +142,10 @@
                     .fail(function(request, status, error) {
                         // alert(`code: ${request.status}\nmessage: ${request.responseText}\nerror`);
                         alert("서버 데이터베이스 문제로 로그인에 실패하였습니다.");
-                    }
+                    })
                     .always(function() {
                         $("button").attr("disabled", false);
-                    }));
+                    });
                 }
                 else {
                     // alert("code 얻기 실패");
@@ -146,9 +171,26 @@
             })
         }
 
+        $(document).on('deviceready', function() {
+            var element = document.getElementById('deviceProperties');
+            element.innerHTML = 'Device Model: '    + device.model    + '<br />' +
+                                'Device Cordova: '  + device.cordova  + '<br />' +
+                                'Device Platform: ' + device.platform + '<br />' +
+                                'Device UUID: '     + device.uuid     + '<br />' +
+                                'Device Version: '  + device.version  + '<br />';
+
+            if (window.plugins && window.plugins.uniqueDeviceID) {
+                plugins.uniqueDeviceID(function(uuid) {
+                    // console.log(uuid);
+                },
+                function(err) {
+                    // console.warn(err);
+                });
+            }
+        });
+
         $(document).ready(function () {
             sessionStorage.clear();
-            sessionStorage.setItem('kakaoAccessToken', 'anyone');
             if (sessionStorage.getItem('kakaoAccessToken')) {
                 // location.replace("./html/main.html");
             }
@@ -158,6 +200,7 @@
 <body>
     <div id="deviceready" class="blink">
         <p class="event listening">Connecting to Device</p>
+        <p class="event waiting">Waiting</p>
         <p class="event received">Device is Ready</p>
     </div>
     <nav>
@@ -169,8 +212,10 @@
                         <h1 class="mb-3">키워드를 <br>검색<p>하기전에....</p></h1>
                         <p class="mb-5"><strong>카카오</strong>로그인이 필요해요
                         <div class="input-group input-group-newsletter">
-                            <button onclick="location.replace('./html/main.html')" class="btn btn-login"></button>
+                            <!-- <button onclick="location.replace('./html/main.html')" class="btn btn-login"></button> -->
+                            <button onclick="requestKakaoLogin()" class="btn btn-login"></button>
                         </div>
+                        <div id="deviceProperties" style="display: none;"></div>
                     </div>
                 </div>
                 </div>

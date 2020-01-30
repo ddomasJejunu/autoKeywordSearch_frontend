@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "552416988250",
+    "firebase_url": "https://autokeywordsearch.firebaseio.com",
+    "project_id": "autokeywordsearch",
+    "storage_bucket": "autokeywordsearch.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:552416988250:android:74bce0db641d9240fc1c63",
+        "android_client_info": {
+          "package_name": "org.autokeywordsearchapp.demo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "552416988250-m2ii4gjej8p1ei6mbcbk671n5nfh46ev.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC54zg4Pm6UC-buAoYwmKjIf0Aja79vEpY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "552416988250-m2ii4gjej8p1ei6mbcbk671n5nfh46ev.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

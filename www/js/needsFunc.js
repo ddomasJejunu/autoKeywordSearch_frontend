@@ -1,4 +1,5 @@
 kakaoAuthHost = "https://kauth.kakao.com";
+// serverHost = "http://autokeywordsearch.pythonanywhere.com";
 serverHost = "http://172.19.8.34:8000";
 // serverHost = "http://192.168.1.30:8000";
 

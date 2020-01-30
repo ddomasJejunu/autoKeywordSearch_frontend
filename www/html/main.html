@@ -147,7 +147,7 @@
         }
 
         function moveAddKeyword() {
-            location.href = "./addSearching.html";
+            location.href = "./saveSearching.html";
         }
         
         $(document).ready(function () {
@@ -185,7 +185,7 @@
                                 let child = $(`<tr id=item${index}></tr>`);
                                 child.appendTo("#search_list");
                                 child.append(`<td class="no">${index+1}</td>`);
-                                child.append(`<td scope="col" class="str"><a href="./updateSearching.html?no=${item["no"]}">${item["search_url"]}</a></td>`);
+                                child.append(`<td scope="col" class="str"><a href="./saveSearching.html?type=update&no=${item["no"]}">${item["search_url"]}</a></td>`);
                                 child.append(`<td class="str">${item["keywords"].replace(",", ", ")}</td>`);
                                 child.append(`<td class="landscape">${item["start_time"]}</td>`);
                                 child.append(`<td class="landscape">${item["end_time"]}</td>`);
